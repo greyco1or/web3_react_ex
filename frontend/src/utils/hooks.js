@@ -8,7 +8,7 @@ export function useWeb3Connect() {
     //activate: 함수, active: Web3React hook안에 있는 변수
     const { activate, active } = useWeb3React();
     //web3 connect를 통해서 시도를 했는지 확인하기 위한 변수저장
-    const { tried, setTried } = useState(false);
+    const [tried, setTried ]  = useState(false);
 
     const tryActivate = useCallback(() => {
         async function _tryActivate() {
