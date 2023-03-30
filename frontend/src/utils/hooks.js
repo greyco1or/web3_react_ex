@@ -32,7 +32,6 @@ export function useWeb3Connect() {
     useEffect(() => {
         tryActivate();
     }, [tryActivate]);
-
     //connection이후에 tried 여부 확인을 위한 구문
     useEffect(() => {
         if (!tried && active) {
