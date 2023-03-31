@@ -1,3 +1,14 @@
+# Web3 React, Metamask, Solidity
+
+frontend:   
+
+![image](https://user-images.githubusercontent.com/104502156/229039173-eb08a570-150d-4568-a1a2-7bfab51b1800.png)
+
+
+
+
+
+
 # Sample Hardhat Project
 
 This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
