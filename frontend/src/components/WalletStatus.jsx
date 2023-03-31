@@ -115,10 +115,10 @@ function NextNonce() {
     const [nextNonce, setNextNonce] = useState();
     
     useEffect(() => {
-        let stale = false;
         if(typeof account === 'undefined' || account === null || !library){
             return;
         }
+        let stale = false;
         async function getNextNounce() {
             try {
                 const nextNonce = await library.getTransactionCount(account);
@@ -135,14 +135,14 @@ function NextNonce() {
 
         return () => {
             stale = true;
-            setNextNonce(undefined);
+            //setNextNonce(undefined);
         }
     })
 
     return (
         <>
             <span>NextNonce : </span>
-            <span>{nextNonce ? nextNonce : ''}</span>
+            <span>{nextNonce ? nextNonce : 'none'}</span>
         </>
     )
 }

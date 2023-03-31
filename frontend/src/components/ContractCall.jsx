@@ -23,6 +23,18 @@ const StyledLabel = styled.label`
     font-weight: bold;
 `
 
+const StyledInput = styled.input`
+    padding: 0.4rem 0.6rem;
+`
+
+const StyledButton = styled.button`
+    width: 150px;
+    height: 2rem;
+    border-radius: 1rem;
+    border-color: blue;
+    cursor: pointer;
+`
+
 export function ContractCall() {
     const { active, library } = useWeb3React();
     //greetingContract는 contract object
@@ -30,6 +42,7 @@ export function ContractCall() {
     const [greetingContractAddr, setGreetingContractAddr] = useState('');
     const [signer, setSigner] = useState();
     const [greeting, setGreeting] = useState('');
+    const [greetingInput, setGreetingInput] = useState('')
 
     useEffect(() => {
         //라이브러리가 없으면
@@ -40,6 +53,24 @@ export function ContractCall() {
 
         setSigner(library.getSigner());
     }, [library])
+
+    useEffect(() => {
+        //컨트랙트가 배포되어있지 않을 경우
+        if(!greetingContract) {
+            return;
+        }
+        
+        async function getGreeting(greetingContract) {
+            const _greeting = await greetingContract.greet();
+
+            //greeting 문자가 기존과 다를 경우에만 set해준다.
+            if (_greeting !== greeting) {
+                setGreeting(_greeting);
+            }
+        }
+
+        getGreeting(greetingContract);
+    }, [greetingContract, greeting])
 
     const handleDepolyContract = (event) => {
         event.preventDefault();
@@ -72,11 +103,49 @@ export function ContractCall() {
                 window.alert(`Greeting deployed to : ${greetingContract.address}`)
 
             } catch (error) {
-                window.alert('Error: ', (error && error.message ? `${error.message}` : ''))
+                window.alert('Error: '+ (error && error.message ? `${error.message}` : ''))
             }
 
         }
         deployGreetingContract();
+    }
+
+    const handleGreetingChange = (event) => {
+        event.preventDefault();
+        setGreetingInput(event.target.value);
+    }
+
+    const handleGreetingSubmit = (event) => {
+        event.preventDefault();
+
+        if(!greetingContract) {
+            window.alert('Undefined greeting Contract');
+            return;
+        }
+
+        if(!greetingInput) {
+            window.alert('Greeting Input cannot be empty');
+            return;
+        }
+
+        async function submitGreeting(greetingContract) {
+            try {
+                const setGreetingTxn = await greetingContract.setGreeting(greetingInput);
+                //setGreetingTxn 트랜잭션이 이루어질 때까지 await
+                await setGreetingTxn.wait();
+                
+                const newGreeting = await greetingContract.greet();
+                window.alert(`Success: ${newGreeting}`);
+
+                if (newGreeting !== greeting) {
+                    setGreeting(newGreeting);
+                }
+            } catch (error) {
+                window.alert('Error: ' + (error && error.message ? `${error.message}` : ''));
+            }
+        }
+
+        submitGreeting(greetingContract);
     }
 
     return (
@@ -89,6 +158,12 @@ export function ContractCall() {
             <StyledGreetingDiv>
                 <StyledLabel>Greeting</StyledLabel>
                 <div>{greeting ? greeting : <>Contract not yet deployed</>}</div>
+            </StyledGreetingDiv>
+            <StyledGreetingDiv>
+                <StyledLabel>Set new Greeting</StyledLabel>
+                <StyledInput id="greetingInput" type="text" placeholder={greeting ? '' : 'Contract not yet deployed'}
+                onChange={handleGreetingChange} />
+                <StyledButton disabled={!active || !greetingContract ? true : false} onClick={handleGreetingSubmit}>Submit</StyledButton>
             </StyledGreetingDiv>
         </>
     )
